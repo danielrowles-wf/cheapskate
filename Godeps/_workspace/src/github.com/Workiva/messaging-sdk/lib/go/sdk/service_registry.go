@@ -1,8 +1,9 @@
 package sdk
 
+// DEPRECATED: use ServiceDescriptor instead.
 type Service string
 
-// TODO: Make this a dynamically configured file?
+// DEPRECATED: use ServiceDescriptor instead.
 const (
 	ServiceCerberus         Service = "cerberus"
 	ServiceLinkingApi       Service = "linking-api"

@@ -16,12 +16,12 @@ var ErrTimeout = errors.New("frugal: request timed out")
 const (
 	cid            = "_cid"
 	opID           = "_opid"
-	defaultTimeout = time.Minute
+	defaultTimeout = 5 * time.Second
 )
 
 // FContext is the context for a Frugal message. Every RPC has an FContext,
 // which can be used to set request headers, response headers, and the request
-// timeout. The default timeout is one minute. An FContext is also sent with
+// timeout. The default timeout is five seconds. An FContext is also sent with
 // every publish message which is then received by subscribers.
 //
 // In addition to headers, the FContext also contains a correlation ID which
@@ -92,14 +92,16 @@ func (c *FContext) opID() uint64 {
 }
 
 // AddRequestHeader adds a request header to the context for the given name.
-// The headers _cid and _opid are reserved.
-func (c *FContext) AddRequestHeader(name, value string) {
+// The headers _cid and _opid are reserved. Returns the same FContext to allow
+// for chaining calls.
+func (c *FContext) AddRequestHeader(name, value string) *FContext {
 	if name == cid || name == opID {
-		return
+		return c
 	}
 	c.mu.Lock()
 	c.requestHeaders[name] = value
 	c.mu.Unlock()
+	return c
 }
 
 // RequestHeader gets the named request header
@@ -122,12 +124,14 @@ func (c *FContext) RequestHeaders() map[string]string {
 }
 
 // AddResponseHeader adds a response header to the context for the given name.
-// The _opid header is reserved.
-func (c *FContext) AddResponseHeader(name, value string) {
+// The _opid header is reserved. Returns the same FContext to allow for
+// chaining calls.
+func (c *FContext) AddResponseHeader(name, value string) *FContext {
 	if name == opID {
-		return
+		return c
 	}
 	c.addResponseHeader(name, value)
+	return c
 }
 
 // ResponseHeader gets the named response header
@@ -149,11 +153,13 @@ func (c *FContext) ResponseHeaders() map[string]string {
 	return headers
 }
 
-// SetTimeout sets the request timeout. Default is 1 minute.
-func (c *FContext) SetTimeout(timeout time.Duration) {
+// SetTimeout sets the request timeout. Default is 5 seconds. Returns the same
+// FContext to allow for chaining calls.
+func (c *FContext) SetTimeout(timeout time.Duration) *FContext {
 	c.mu.Lock()
 	c.timeout = timeout
 	c.mu.Unlock()
+	return c
 }
 
 // Timeout returns the request timeout.

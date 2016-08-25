@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"git.apache.org/thrift.git/lib/go/thrift"
-	log "github.com/Sirupsen/logrus"
 )
 
 // FProcessor is Frugal's equivalent of Thrift's TProcessor. It's a generic
@@ -23,10 +22,12 @@ type FBaseProcessor struct {
 	processMap map[string]FProcessorFunction
 }
 
+// NewFBaseProcessor returns a new FBaseProcessor which FProcessors can extend.
 func NewFBaseProcessor() *FBaseProcessor {
 	return &FBaseProcessor{processMap: make(map[string]FProcessorFunction)}
 }
 
+// Process a request.
 func (f *FBaseProcessor) Process(iprot, oprot *FProtocol) error {
 	ctx, err := iprot.ReadRequestHeader()
 	if err != nil {
@@ -40,7 +41,7 @@ func (f *FBaseProcessor) Process(iprot, oprot *FProtocol) error {
 	if ok {
 		err := processor.Process(ctx, iprot, oprot)
 		if err != nil {
-			log.Warnf("frugal: error processing request with correlation id %s: %s", ctx.CorrelationID(), err.Error())
+			logger().Warnf("frugal: error processing request with correlation id %s: %s", ctx.CorrelationID(), err.Error())
 		}
 		return err
 	}
@@ -86,6 +87,8 @@ type fProcessorFactory struct {
 	processor FProcessor
 }
 
+// NewFProcessorFactory creates a new FProcessorFactory for creating new
+// FProcessors.
 func NewFProcessorFactory(p FProcessor) FProcessorFactory {
 	return &fProcessorFactory{processor: p}
 }

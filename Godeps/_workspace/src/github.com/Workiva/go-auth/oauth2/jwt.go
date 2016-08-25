@@ -174,6 +174,13 @@ func GetUnvalidatedTokenClaims(jwtString string) (TokenProperties, error) {
 		properties.ClientID = properties.Audience
 	}
 
+	if properties.Version == 5 {
+		// copy user RIDs for backwards compatibility necessary for messaging
+		properties.MembershipRID = properties.Context.Membership
+		properties.AccountRID = properties.Context.Account
+		properties.UserRID = properties.Context.User
+	}
+
 	return properties, nil
 }
 

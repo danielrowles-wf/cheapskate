@@ -31,19 +31,20 @@ type Options struct {
 	NATSConfig           nats.Options
 	ClientCertFilepath   string
 	ClientCACertFilepath string
-	ThriftProtocol       ThriftProtocol
-	ThriftBufferSize     uint
-	HeartbeatInterval    time.Duration
-	MaxMissedHeartbeats  uint
-	ConnectTimeout       time.Duration
+	ThriftProtocol       ThriftProtocol // DEPRECATED
+	ThriftBufferSize     uint           // DEPRECATED
+	HeartbeatInterval    time.Duration  // DEPRECATED
+	MaxMissedHeartbeats  uint           // DEPRECATED
+	ConnectTimeout       time.Duration  // DEPRECATED
 	NumWorkers           uint
-	VesselHosts          []string
-	VesselConfig         vessel.Config
-	VesselAuth           *jwt.Config
+	VesselHosts          []string      // DEPRECATED
+	VesselConfig         vessel.Config // DEPRECATED
+	VesselAuth           *jwt.Config   // DEPRECATED
 	IamTokenFetcher      IamTokenFetcher
 }
 
 // NewOptions creates a new Options for the given service client id.
+// DEPRECATED. Will be removed in 2.0.0. Use NewClientOptions instead.
 func NewOptions(clientID string) Options {
 	cfg := nats.DefaultOptions
 	servers := MsgURL()
@@ -71,19 +72,38 @@ func NewOptions(clientID string) Options {
 	}
 }
 
-func (o Options) newThriftProtocolFactory() (thrift.TProtocolFactory, error) {
-	var protocolFactory thrift.TProtocolFactory
-	switch o.ThriftProtocol {
-	case ProtocolBinary:
-		protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
-	case ProtocolCompact:
-		protocolFactory = thrift.NewTCompactProtocolFactory()
-	case ProtocolJSON:
-		protocolFactory = thrift.NewTJSONProtocolFactory()
-	default:
-		return nil, fmt.Errorf("sdk: invalid protocol specified: %s", o.ThriftProtocol)
+// NewClientOptions creates a new Options used to create a Messaging SDK
+// Client.
+func NewClientOptions() Options {
+	cfg := nats.DefaultOptions
+	servers := MsgURL()
+	if len(servers) > 0 {
+		// If MSG_URL set, override any URL set in the config
+		cfg.Url = ""
+		cfg.Servers = servers
+	} else if cfg.Url == "" {
+		// If nothing is set, take the default url
+		cfg.Url = nats.DefaultURL
 	}
-	return protocolFactory, nil
+	hostname, err := os.Hostname()
+	if err != nil {
+		// Not really sure what to do if this call fails.
+		hostname = "hostname"
+	}
+	cfg.Name = fmt.Sprintf("%s-%d", hostname, os.Getpid())
+
+	return Options{
+		NATSConfig:           cfg,
+		ClientCertFilepath:   MsgCert(),
+		ClientCACertFilepath: MsgCACert(),
+		ThriftProtocol:       ProtocolBinary,
+		ThriftBufferSize:     defaultTransportBuffer,
+		NumWorkers:           uint(runtime.NumCPU()),
+	}
+}
+
+func (o Options) newThriftProtocolFactory() (thrift.TProtocolFactory, error) {
+	return newTProtocolFactory(o.ThriftProtocol)
 }
 
 func (o Options) newThriftTransportFactory() thrift.TTransportFactory {
@@ -94,4 +114,19 @@ func (o Options) newThriftTransportFactory() thrift.TTransportFactory {
 		transportFactory = thrift.NewTTransportFactory()
 	}
 	return transportFactory
+}
+
+func newTProtocolFactory(protocol ThriftProtocol) (thrift.TProtocolFactory, error) {
+	var protocolFactory thrift.TProtocolFactory
+	switch protocol {
+	case ProtocolBinary:
+		protocolFactory = thrift.NewTBinaryProtocolFactoryDefault()
+	case ProtocolCompact:
+		protocolFactory = thrift.NewTCompactProtocolFactory()
+	case ProtocolJSON:
+		protocolFactory = thrift.NewTJSONProtocolFactory()
+	default:
+		return nil, fmt.Errorf("sdk: invalid protocol specified: %s", protocol)
+	}
+	return protocolFactory, nil
 }
