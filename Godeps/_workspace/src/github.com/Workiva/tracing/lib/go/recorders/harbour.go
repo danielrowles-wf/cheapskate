@@ -15,8 +15,8 @@ const (
 )
 
 type HarbourRecorder struct {
-	socketPath  string
-	messages    chan []byte
+	socketPath string
+	messages   chan []byte
 }
 
 func NewHarbourRecorder(socketPath string) *HarbourRecorder {
@@ -24,8 +24,8 @@ func NewHarbourRecorder(socketPath string) *HarbourRecorder {
 		socketPath = tracingSocket
 	}
 	recorder := &HarbourRecorder{
-		socketPath:  socketPath,
-		messages:    make(chan []byte),
+		socketPath: socketPath,
+		messages:   make(chan []byte),
 	}
 	go recorder.sendMessages()
 	return recorder
@@ -39,7 +39,7 @@ func (h *HarbourRecorder) sendMessages() {
 
 	for {
 		select {
-		case msg := <- h.messages:
+		case msg := <-h.messages:
 			if toStderr == false {
 				if _, err := conn.Write(msg); err != nil {
 					toStderr = true
@@ -51,7 +51,7 @@ func (h *HarbourRecorder) sendMessages() {
 				os.Stderr.Write(msg)
 				os.Stderr.WriteString("\n")
 			}
-		case <- nextTry:
+		case <-nextTry:
 			c, err := h.connect()
 			if err == nil && c != nil {
 				conn = c

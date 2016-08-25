@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/danielrowles-wf/cheapskate",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.6",
 	"Packages": [
 		"./..."
 	],
@@ -66,23 +66,23 @@
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go",
-			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
+			"Rev": "1951ea57761e7e792eb88595ddd737fdf9c500f7"
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go/middleware/messaging",
-			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
+			"Rev": "1951ea57761e7e792eb88595ddd737fdf9c500f7"
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go/middleware/rest",
-			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
+			"Rev": "1951ea57761e7e792eb88595ddd737fdf9c500f7"
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go/recorders",
-			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
+			"Rev": "1951ea57761e7e792eb88595ddd737fdf9c500f7"
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go/wire",
-			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
+			"Rev": "1951ea57761e7e792eb88595ddd737fdf9c500f7"
 		},
 		{
 			"ImportPath": "github.com/dgrijalva/jwt-go",
