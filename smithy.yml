@@ -1,6 +1,9 @@
 project: golang
 language: golang
 
+# Use the same golang 1.6.2 runner that skaardb uses
+runner_image: drydock.workiva.org/workiva/golang-deb:47516
+
 script:
   - echo "All Ur Moniez Are Belong To Gnatsd"
   - go get github.com/tools/godep
