@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	tracing "github.com/Workiva/tracing/lib/go"
+	recorders "github.com/Workiva/tracing/lib/go/recorders"
+	opentracing "github.com/opentracing/opentracing-go"
 )
 
 func Usage() {
@@ -16,11 +20,12 @@ func Usage() {
 func main() {
 	flag.Usage = Usage
 	var (
-		natsAddr     = flag.String("nats-addr", "", "NATS address")
-		httpAddr     = flag.String("listen-http", "127.0.0.1:8888", "HTTP listen address")
-		quotes       = flag.String("quotes", "", "Path to quotes file")
-		svcName      = flag.String("service-name", "cheapskate", "The name of this service")
-		maxDelayFlag = flag.Int("max-delay", -1, "The max delay to use before responding to requests")
+		natsAddr      = flag.String("nats-addr", "", "NATS address")
+		httpAddr      = flag.String("listen-http", "127.0.0.1:8888", "HTTP listen address")
+		quotes        = flag.String("quotes", "", "Path to quotes file")
+		svcName       = flag.String("service-name", "cheapskate", "The name of this service")
+		maxDelayFlag  = flag.Int("max-delay", -1, "The max delay to use before responding to requests")
+		enableTracing = flag.Bool("tracing", false, "Enable request tracing")
 	)
 	flag.Parse()
 
@@ -36,6 +41,13 @@ func main() {
 		}
 	}
 
+	if *enableTracing {
+		// recorder := tracing.NewTrivialRecorder(*svcName)
+		recorder := recorders.NewLogBasedRecorder(*svcName)
+		tracer := tracing.New(recorder)
+		opentracing.InitGlobalTracer(tracer)
+	}
+
 	cheap := NewCheapskate(*quotes, maxDelay)
 	bang := make(chan error)
 	svcCnt := 0
@@ -44,7 +56,7 @@ func main() {
 		fmt.Printf("Connect to nats and listen\n")
 		svcCnt++
 		go func() {
-			n := NewNatsServer(cheap, *svcName, *natsAddr)
+			n := NewNatsServer(cheap, *svcName, *natsAddr, *enableTracing)
 			bang <- n.ListenAndServe()
 		}()
 	}
@@ -52,7 +64,7 @@ func main() {
 		fmt.Printf("Start http server on <%s>\n", *httpAddr)
 		svcCnt++
 		go func() {
-			h := NewRestServer(cheap, *httpAddr)
+			h := NewRestServer(cheap, *httpAddr, *enableTracing)
 			bang <- h.ListenAndServe()
 		}()
 	}

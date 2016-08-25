@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	middleware "github.com/Workiva/tracing/lib/go/middleware/rest"
 	w_model "github.com/danielrowles-wf/cheapskate/gen-go/workiva_frugal_api_model"
 	"log"
 	"net/http"
@@ -11,19 +12,28 @@ import (
 type cheapRest struct {
 	handler    *Cheapskate
 	listenAddr string
+	tracing    bool
 }
 
-func NewRestServer(handler *Cheapskate, listenAddr string) *cheapRest {
+func NewRestServer(handler *Cheapskate, listenAddr string, tracing bool) *cheapRest {
 	return &cheapRest{
 		handler:    handler,
 		listenAddr: listenAddr,
+		tracing:    tracing,
 	}
 }
 
 func (r *cheapRest) ListenAndServe() error {
+	var handler http.Handler
+	if r.tracing {
+		handler = middleware.NewServerTracingMiddleware(r)
+	} else {
+		handler = r
+	}
+
 	server := &http.Server{
 		Addr:           r.listenAddr,
-		Handler:        r,
+		Handler:        handler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 65535,

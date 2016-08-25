@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/Workiva/frugal/lib/go"
 	"github.com/Workiva/messaging-sdk/lib/go/sdk"
+	middleware "github.com/Workiva/tracing/lib/go/middleware/messaging"
 	"github.com/danielrowles-wf/cheapskate/gen-go/stingy"
 	w_model "github.com/danielrowles-wf/cheapskate/gen-go/workiva_frugal_api_model"
 	"log"
@@ -12,13 +13,15 @@ type cheapNats struct {
 	handler  *Cheapskate
 	svcName  string
 	natsAddr string
+	tracing  bool
 }
 
-func NewNatsServer(handler *Cheapskate, svcName, natsAddr string) *cheapNats {
+func NewNatsServer(handler *Cheapskate, svcName, natsAddr string, tracing bool) *cheapNats {
 	return &cheapNats{
 		handler:  handler,
 		svcName:  svcName,
 		natsAddr: natsAddr,
+		tracing:  tracing,
 	}
 }
 
@@ -35,7 +38,14 @@ func (n *cheapNats) ListenAndServe() error {
 	}
 	defer client.Close()
 
-	processor := stingy.NewFStingyServiceProcessor(n)
+	var processor *stingy.FStingyServiceProcessor
+	if n.tracing {
+		mware := middleware.NewServerTracingMiddleware()
+		processor = stingy.NewFStingyServiceProcessor(n, mware)
+	} else {
+		processor = stingy.NewFStingyServiceProcessor(n)
+	}
+
 	service := sdk.Service(n.svcName)
 	server, err := client.ProvideServer(service, processor)
 	if err != nil {
