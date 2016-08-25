@@ -8,6 +8,11 @@ import (
 	"github.com/Workiva/frugal/lib/go"
 	"github.com/Workiva/messaging-sdk/lib/go/sdk"
 	w_service "github.com/danielrowles-wf/cheapskate/gen-go/workiva_frugal_api"
+
+	tracing "github.com/Workiva/tracing/lib/go"
+	middleware "github.com/Workiva/tracing/lib/go/middleware/messaging"
+	recorders "github.com/Workiva/tracing/lib/go/recorders"
+	opentracing "github.com/opentracing/opentracing-go"
 )
 
 func Usage() {
@@ -19,13 +24,20 @@ func Usage() {
 func main() {
 	flag.Usage = Usage
 	var (
-		natsAddr = flag.String("addr", "", "NATS address")
-		svcName  = flag.String("service-name", "cheapskate", "Service name")
-		info     = flag.Bool("info", false, "Call the info method")
-		ping     = flag.Bool("ping", false, "Call the ping method")
-		health   = flag.Bool("health", false, "Call the health method")
+		natsAddr      = flag.String("addr", "", "NATS address")
+		svcName       = flag.String("service-name", "cheapskate", "Service name")
+		info          = flag.Bool("info", false, "Call the info method")
+		ping          = flag.Bool("ping", false, "Call the ping method")
+		health        = flag.Bool("health", false, "Call the health method")
+		enableTracing = flag.Bool("tracing", false, "Enable message tracing")
 	)
 	flag.Parse()
+
+	if *enableTracing {
+		recorder := recorders.NewLogBasedRecorder(*svcName)
+		tracer := tracing.New(recorder)
+		opentracing.InitGlobalTracer(tracer)
+	}
 
 	options := sdk.NewOptions(*svcName)
 	if *natsAddr != "" {
@@ -51,7 +63,13 @@ func main() {
 	}
 	defer transport.Close()
 
-	healthClient := w_service.NewFBaseServiceClient(transport, protocolFactory)
+	var healthClient *w_service.FBaseServiceClient
+	if *enableTracing {
+		mware := middleware.NewClientTracingMiddleware()
+		healthClient = w_service.NewFBaseServiceClient(transport, protocolFactory, mware)
+	} else {
+		healthClient = w_service.NewFBaseServiceClient(transport, protocolFactory)
+	}
 
 	err = nil
 	if *health {
