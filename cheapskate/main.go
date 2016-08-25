@@ -16,10 +16,10 @@ func Usage() {
 func main() {
 	flag.Usage = Usage
 	var (
-		natsAddr = flag.String("nats-addr", "", "NATS address")
-		httpAddr = flag.String("listen-http", "127.0.0.1:8888", "HTTP listen address")
-		quotes = flag.String("quotes", "", "Path to quotes file")
-		svcName = flag.String("service-name", "cheapskate", "The name of this service")
+		natsAddr     = flag.String("nats-addr", "", "NATS address")
+		httpAddr     = flag.String("listen-http", "127.0.0.1:8888", "HTTP listen address")
+		quotes       = flag.String("quotes", "", "Path to quotes file")
+		svcName      = flag.String("service-name", "cheapskate", "The name of this service")
 		maxDelayFlag = flag.Int("max-delay", -1, "The max delay to use before responding to requests")
 	)
 	flag.Parse()
@@ -43,7 +43,7 @@ func main() {
 	if (natsAddr != nil && *natsAddr != "") || os.Getenv("MSG_URL") != "" {
 		fmt.Printf("Connect to nats and listen\n")
 		svcCnt++
-		go func () {
+		go func() {
 			n := NewNatsServer(cheap, *svcName, *natsAddr)
 			bang <- n.ListenAndServe()
 		}()
@@ -64,4 +64,3 @@ func main() {
 	fmt.Printf("error running server: %s\n", err)
 	os.Exit(1)
 }
-

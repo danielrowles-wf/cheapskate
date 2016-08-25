@@ -83,7 +83,7 @@ func checkHealth(client *w_service.FBaseServiceClient) error {
 
 	if l := len(res.Metadata); l > 0 {
 		fmt.Printf("Metadata: (%d)\n", l)
-		for k, v := range(res.Metadata) {
+		for k, v := range res.Metadata {
 			fmt.Printf("    <%s> => <%s>\n", k, v)
 		}
 	}
@@ -106,7 +106,7 @@ func checkInfo(client *w_service.FBaseServiceClient) error {
 	}
 	if l := len(res.Metadata); l > 0 {
 		fmt.Printf("Metadata: (%d)\n", l)
-		for k, v := range(res.Metadata) {
+		for k, v := range res.Metadata {
 			fmt.Printf("    <%s> => <%s>\n", k, v)
 		}
 	}

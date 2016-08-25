@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
 	"github.com/Workiva/frugal/lib/go"
 	"github.com/Workiva/messaging-sdk/lib/go/sdk"
 	"github.com/danielrowles-wf/cheapskate/gen-go/stingy"
 	w_model "github.com/danielrowles-wf/cheapskate/gen-go/workiva_frugal_api_model"
+	"log"
 )
 
 type cheapNats struct {

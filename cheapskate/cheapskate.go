@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
+	w_model "github.com/danielrowles-wf/cheapskate/gen-go/workiva_frugal_api_model"
 	"log"
 	"math/rand"
 	"strconv"
 	"time"
-	w_model "github.com/danielrowles-wf/cheapskate/gen-go/workiva_frugal_api_model"
 )
 
 type Cheapskate struct {
-	quotes    []string
-	maxDelay  int
+	quotes   []string
+	maxDelay int
 }
 
 func NewCheapskate(fortune string, maxDelay int) *Cheapskate {
@@ -70,9 +70,9 @@ func (h *Cheapskate) CheckServiceHealth(cid string) (*w_model.ServiceHealthStatu
 	out := w_model.NewServiceHealthStatus()
 	out.Message = fmt.Sprintf("All Ur <%s> Are Belong To DevOps", cid)
 	out.Metadata = map[string]string{
-		"pies": "tasty",
-		"beer": "yummy",
-		"corr": cid,
+		"pies":  "tasty",
+		"beer":  "yummy",
+		"corr":  cid,
 		"sleep": strconv.Itoa(dur),
 	}
 	if res == 0 {

@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	w_model "github.com/danielrowles-wf/cheapskate/gen-go/workiva_frugal_api_model"
 	"log"
 	"net/http"
 	"time"
-	w_model "github.com/danielrowles-wf/cheapskate/gen-go/workiva_frugal_api_model"
 )
 
 type cheapRest struct {
@@ -44,8 +44,8 @@ func (r *cheapRest) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusOK)
 		res.Write([]byte("Pong Pong Pong Pong Pong Pong Pong Pong\n"))
 
-		for name, vals := range(req.Header) {
-			for _, val := range(vals) {
+		for name, vals := range req.Header {
+			for _, val := range vals {
 				res.Write([]byte(name))
 				res.Write([]byte(": "))
 				res.Write([]byte(val))
@@ -117,5 +117,5 @@ func (r *cheapRest) statusToResponseCode(status w_model.HealthCondition) int {
 		return 520
 	} else {
 		return 500
-	} 
+	}
 }
