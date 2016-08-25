@@ -66,23 +66,23 @@
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go",
-			"Rev": "312ac9188d33414c98005247a14edfd3c782e451"
+			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go/middleware/messaging",
-			"Rev": "312ac9188d33414c98005247a14edfd3c782e451"
+			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go/middleware/rest",
-			"Rev": "312ac9188d33414c98005247a14edfd3c782e451"
+			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go/recorders",
-			"Rev": "312ac9188d33414c98005247a14edfd3c782e451"
+			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
 		},
 		{
 			"ImportPath": "github.com/Workiva/tracing/lib/go/wire",
-			"Rev": "312ac9188d33414c98005247a14edfd3c782e451"
+			"Rev": "745300e0cb19b2cb655ec96e40b74f0c0dae2f5b"
 		},
 		{
 			"ImportPath": "github.com/dgrijalva/jwt-go",

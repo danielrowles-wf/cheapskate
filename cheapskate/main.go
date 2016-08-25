@@ -43,7 +43,8 @@ func main() {
 
 	if *enableTracing {
 		// recorder := tracing.NewTrivialRecorder(*svcName)
-		recorder := recorders.NewLogBasedRecorder(*svcName)
+		// recorder := recorders.NewLogBasedRecorder(*svcName)
+		recorder := recorders.NewHarbourRecorder("/dev/harbour/tracing")
 		tracer := tracing.New(recorder)
 		opentracing.InitGlobalTracer(tracer)
 	}
