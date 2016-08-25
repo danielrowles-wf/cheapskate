@@ -1,0 +1,13 @@
+project: golang
+language: golang
+
+script:
+  - echo "All Ur Moniez Are Belong To Gnatsd"
+  - go get github.com/tools/godep
+  - cd ./cheapskate && godep go build -x .
+  - cd ./client && godep go build -x .
+
+artifacts:
+  release:
+    - cheapskate/cheapskate
+    - client/client

@@ -1,0 +1,7 @@
+# stingy.frugal
+
+include "base_service.frugal"
+
+service StingyService extends base_service.BaseService {
+        string GetQuote()
+}

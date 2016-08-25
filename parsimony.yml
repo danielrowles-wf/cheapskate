@@ -1,0 +1,16 @@
+stingy.frugal:
+  path: "idl/stingy.frugal"
+  requires: ["base_model.frugal", "base_service.frugal"]
+
+base_service.frugal:
+  git:
+    repo: "github.com/Workiva/messaging-sdk"
+    ref: "c572b3a9e4e1e217a8dc8b14fac57da91f639bee"
+  remote-target: "base_service.frugal"
+  requires: ["base_model.frugal"]
+
+base_model.frugal:
+  git:
+    repo: "github.com/Workiva/messaging-sdk"
+    ref: "c572b3a9e4e1e217a8dc8b14fac57da91f639bee"
+  remote-target: "base_model.frugal"
